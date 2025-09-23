@@ -43,3 +43,34 @@ data class SessionListResponse(
     val pagination: Pagination?
 )
 
+// --- Session details ---
+data class Seat(
+    val id: String,
+    val row: Int,
+    val number: Int,
+    val categoryId: String,
+    val status: String? = null,
+)
+
+data class SeatCategory(
+    val id: String,
+    val name: String,
+    val priceCents: Int,
+)
+
+data class HallPlan(
+    val hallId: String,
+    val rows: Int,
+    val seats: List<Seat>,
+    val categories: List<SeatCategory>,
+)
+
+data class Ticket(
+    val id: String,
+    val sessionId: String,
+    val seatId: String,
+    val categoryId: String,
+    val priceCents: Int,
+    val status: String,
+)
+

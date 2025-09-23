@@ -18,7 +18,11 @@ import com.example.cinemaproject.ui.theme.CinemaProjectTheme
 import com.example.cinemaproject.ui.RegisterScreen
 import com.example.cinemaproject.ui.LoginScreen
 import com.example.cinemaproject.ui.SessionsListScreen
+import com.example.cinemaproject.ui.SessionDetailsScreen
 import com.example.cinemaproject.data.TokenStorage
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,22 +34,41 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(innerPadding)) {
                         val context = LocalContext.current
                         val tokenStorage = TokenStorage(context)
-                        val hasToken = tokenStorage.getAccessToken() != null
-                        val showLogin = remember { mutableStateOf(!hasToken) }
-                        if (!showLogin.value) {
-                            SessionsListScreen(tokenStorage = tokenStorage)
-                        } else if (showLogin.value) {
-                            LoginScreen(
-                                tokenStorage = tokenStorage,
-                                onLoggedIn = { /* TODO: navigate to home */ },
-                                onNavigateToRegister = { showLogin.value = false }
-                            )
-                        } else {
-                            RegisterScreen(
-                                tokenStorage = tokenStorage,
-                                onRegistered = { /* TODO: navigate to home */ },
-                                onNavigateToLogin = { showLogin.value = true }
-                            )
+                        val navController = rememberNavController()
+                        val startDestination = if (tokenStorage.getAccessToken() != null) "sessions" else "auth"
+                        NavHost(navController = navController, startDestination = startDestination) {
+                            composable("auth") {
+                                val showLogin = remember { mutableStateOf(true) }
+                                if (showLogin.value) {
+                                    LoginScreen(
+                                        tokenStorage = tokenStorage,
+                                        onLoggedIn = { navController.navigate("sessions") { popUpTo("auth") { inclusive = true } } },
+                                        onNavigateToRegister = { showLogin.value = false }
+                                    )
+                                } else {
+                                    RegisterScreen(
+                                        tokenStorage = tokenStorage,
+                                        onRegistered = { navController.navigate("sessions") { popUpTo("auth") { inclusive = true } } },
+                                        onNavigateToLogin = { showLogin.value = true }
+                                    )
+                                }
+                            }
+                            composable("sessions") {
+                                SessionsListScreen(
+                                    tokenStorage = tokenStorage,
+                                    onOpenDetails = { sessionId, hallId -> navController.navigate("details/$sessionId/$hallId") }
+                                )
+                            }
+                            composable("details/{sessionId}/{hallId}") { backStack ->
+                                val sessionId = backStack.arguments?.getString("sessionId") ?: return@composable
+                                val hallId = backStack.arguments?.getString("hallId") ?: return@composable
+                                SessionDetailsScreen(
+                                    tokenStorage = tokenStorage,
+                                    sessionId = sessionId,
+                                    hallId = hallId,
+                                    onBack = { navController.popBackStack() }
+                                )
+                            }
                         }
                     }
                 }

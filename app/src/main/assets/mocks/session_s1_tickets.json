@@ -1,0 +1,23 @@
+[
+  {"id":"t1","sessionId":"s1","seatId":"h1r1s1","categoryId":"c1","priceCents":50000,"status":"SOLD"},
+  {"id":"t2","sessionId":"s1","seatId":"h1r1s2","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t3","sessionId":"s1","seatId":"h1r1s3","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t4","sessionId":"s1","seatId":"h1r1s4","categoryId":"c1","priceCents":50000,"status":"RESERVED"},
+  {"id":"t5","sessionId":"s1","seatId":"h1r1s5","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t6","sessionId":"s1","seatId":"h1r1s6","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t7","sessionId":"s1","seatId":"h1r1s7","categoryId":"c1","priceCents":50000,"status":"SOLD"},
+  {"id":"t8","sessionId":"s1","seatId":"h1r1s8","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t9","sessionId":"s1","seatId":"h1r2s1","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t10","sessionId":"s1","seatId":"h1r2s2","categoryId":"c1","priceCents":50000,"status":"SOLD"},
+  {"id":"t11","sessionId":"s1","seatId":"h1r2s3","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t12","sessionId":"s1","seatId":"h1r2s4","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t13","sessionId":"s1","seatId":"h1r3s1","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t14","sessionId":"s1","seatId":"h1r3s2","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t15","sessionId":"s1","seatId":"h1r3s3","categoryId":"c1","priceCents":50000,"status":"SOLD"},
+  {"id":"t16","sessionId":"s1","seatId":"h1r3s4","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t17","sessionId":"s1","seatId":"h1r4s5","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t18","sessionId":"s1","seatId":"h1r5s6","categoryId":"c1","priceCents":50000,"status":"SOLD"},
+  {"id":"t19","sessionId":"s1","seatId":"h1r7s3","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"},
+  {"id":"t20","sessionId":"s1","seatId":"h1r9s12","categoryId":"c1","priceCents":50000,"status":"AVAILABLE"}
+]
+
