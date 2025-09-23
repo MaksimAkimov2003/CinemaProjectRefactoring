@@ -1,0 +1,16 @@
+{
+  "data": [
+    {"id":"s1","filmId":"f1","hallId":"h1","startAt":"2025-09-23T10:00:00Z","timeslot":{"start":"2025-09-23T10:00:00Z","end":"2025-09-23T12:00:00Z"}},
+    {"id":"s2","filmId":"f1","hallId":"h2","startAt":"2025-09-23T13:00:00Z","timeslot":{"start":"2025-09-23T13:00:00Z","end":"2025-09-23T15:05:00Z"}},
+    {"id":"s3","filmId":"f2","hallId":"h3","startAt":"2025-09-24T09:30:00Z","timeslot":{"start":"2025-09-24T09:30:00Z","end":"2025-09-24T11:20:00Z"}},
+    {"id":"s4","filmId":"f2","hallId":"h1","startAt":"2025-09-24T12:15:00Z","timeslot":{"start":"2025-09-24T12:15:00Z","end":"2025-09-24T14:00:00Z"}},
+    {"id":"s5","filmId":"f3","hallId":"h1","startAt":"2025-09-25T16:45:00Z","timeslot":{"start":"2025-09-25T16:45:00Z","end":"2025-09-25T18:30:00Z"}},
+    {"id":"s6","filmId":"f4","hallId":"h2","startAt":"2025-09-25T19:00:00Z","timeslot":{"start":"2025-09-25T19:00:00Z","end":"2025-09-25T21:10:00Z"}},
+    {"id":"s7","filmId":"f5","hallId":"h3","startAt":"2025-09-26T08:00:00Z","timeslot":{"start":"2025-09-26T08:00:00Z","end":"2025-09-26T09:50:00Z"}},
+    {"id":"s8","filmId":"f6","hallId":"h3","startAt":"2025-09-26T10:15:00Z","timeslot":{"start":"2025-09-26T10:15:00Z","end":"2025-09-26T12:15:00Z"}},
+    {"id":"s9","filmId":"f7","hallId":"h2","startAt":"2025-09-27T11:30:00Z","timeslot":{"start":"2025-09-27T11:30:00Z","end":"2025-09-27T13:25:00Z"}},
+    {"id":"s10","filmId":"f8","hallId":"h1","startAt":"2025-09-27T14:00:00Z","timeslot":{"start":"2025-09-27T14:00:00Z","end":"2025-09-27T16:15:00Z"}}
+  ],
+  "pagination": {"page": 0, "limit": 20, "total": 10, "pages": 1}
+}
+
