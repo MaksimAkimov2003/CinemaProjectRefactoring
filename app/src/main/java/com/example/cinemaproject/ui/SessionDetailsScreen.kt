@@ -1,6 +1,7 @@
 package com.example.cinemaproject.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -76,6 +79,9 @@ fun SessionDetailsScreen(
         return
     }
     val seatIdToStatus = tickets.value.associateBy { it.seatId }.mapValues { it.value.status }
+    val seatIdToSeat = remember(plan) { plan.seats.associateBy { it.id } }
+    val categoryIdToPrice = remember(plan) { plan.categories.associate { it.id to it.priceCents } }
+    val selectedSeatIds = remember(sessionId, hallId) { mutableStateOf<Set<String>>(emptySet()) }
 
     // Group by row for variable seat counts per row
     val seatsByRow = plan.seats.groupBy { it.row }.mapValues { it.value.sortedBy { s -> s.number } }.toSortedMap()
@@ -97,8 +103,11 @@ fun SessionDetailsScreen(
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.weight(1f)) {
                         items(rowSeats) { seat ->
                             val status = seatIdToStatus[seat.id] ?: "AVAILABLE"
-                            val color = when (status) {
-                                "SOLD", "RESERVED", "CANCELLED" -> Color(0xFF6B5C8E)
+                            val isAvailable = status !in listOf("SOLD", "RESERVED", "CANCELLED")
+                            val isSelected = selectedSeatIds.value.contains(seat.id)
+                            val color = when {
+                                !isAvailable -> Color(0xFF6B5C8E)
+                                isSelected -> Color(0xFF2ECC71)
                                 else -> Color(0xFF8B6BE8)
                             }
                             val idx = rowSeats.indexOf(seat)
@@ -109,7 +118,10 @@ fun SessionDetailsScreen(
                                     modifier = Modifier
                                         .size(32.dp)
                                         .background(color, shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
-                                        .border(1.dp, Color(0xFF2C2344), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp)),
+                                        .border(1.dp, Color(0xFF2C2344), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
+                                        .let { m -> if (isAvailable) m.clickable {
+                                            selectedSeatIds.value = if (isSelected) selectedSeatIds.value - seat.id else selectedSeatIds.value + seat.id
+                                        } else m },
                                     contentAlignment = Alignment.Center
                                 ) { Text(text = seat.number.toString(), color = Color.White, style = MaterialTheme.typography.labelMedium) }
                             }
@@ -130,6 +142,28 @@ fun SessionDetailsScreen(
             Spacer(modifier = Modifier.size(8.dp))
             Box(modifier = Modifier.size(16.dp).background(Color(0xFF6B5C8E)))
             Text(text = "Занято", color = Color(0xFFBCA7FF))
+        }
+
+        if (selectedSeatIds.value.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(8.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(selectedSeatIds.value.toList()) { seatId ->
+                    val seat = seatIdToSeat[seatId] ?: return@items
+                    val priceRub = ((categoryIdToPrice[seat.categoryId] ?: 0) / 100)
+                    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF3B1F58))) {
+                        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Box(modifier = Modifier.size(28.dp).background(Color(0xFF2ECC71), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))) {}
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = "Ряд ${seat.row} Место ${seat.number}", color = Color.White, style = MaterialTheme.typography.titleSmall)
+                                Text(text = "$priceRub ₽", color = Color(0xFFBCA7FF))
+                            }
+                            Text(text = "✕", color = Color(0xFFBCA7FF), modifier = Modifier.clickable {
+                                selectedSeatIds.value = selectedSeatIds.value - seatId
+                            })
+                        }
+                    }
+                }
+            }
         }
     }
 }
