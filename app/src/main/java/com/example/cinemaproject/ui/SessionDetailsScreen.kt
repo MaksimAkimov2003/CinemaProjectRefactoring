@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -150,16 +151,31 @@ fun SessionDetailsScreen(
                 items(selectedSeatIds.value.toList()) { seatId ->
                     val seat = seatIdToSeat[seatId] ?: return@items
                     val priceRub = ((categoryIdToPrice[seat.categoryId] ?: 0) / 100)
-                    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF3B1F58))) {
-                        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Box(modifier = Modifier.size(28.dp).background(Color(0xFF2ECC71), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))) {}
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(text = "Ряд ${seat.row} Место ${seat.number}", color = Color.White, style = MaterialTheme.typography.titleSmall)
-                                Text(text = "$priceRub ₽", color = Color(0xFFBCA7FF))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF3B1F58))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                .widthIn(min = 220.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .background(Color(0xFF2ECC71), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
+                            ) {}
+                            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Text(text = "Ряд ${seat.row}", color = Color.White, style = MaterialTheme.typography.bodyMedium)
+                                Text(text = "Место ${seat.number}", color = Color.White, style = MaterialTheme.typography.bodyMedium)
+                                Text(text = "$priceRub ₽", color = Color(0xFFBCA7FF), style = MaterialTheme.typography.labelMedium)
                             }
-                            Text(text = "✕", color = Color(0xFFBCA7FF), modifier = Modifier.clickable {
-                                selectedSeatIds.value = selectedSeatIds.value - seatId
-                            })
+                            Text(
+                                text = "✕",
+                                color = Color(0xFFBCA7FF),
+                                modifier = Modifier.clickable { selectedSeatIds.value = selectedSeatIds.value - seatId }
+                            )
                         }
                     }
                 }
