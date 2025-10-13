@@ -93,7 +93,7 @@ fun SessionDetailsScreen(
         ) {
             Text(
                 text = "Заказ успешно оплачен - билеты будут отправлены вам на почту",
-                color = Color.White,
+                color = Color.Black,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
