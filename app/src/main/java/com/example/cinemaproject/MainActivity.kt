@@ -58,12 +58,12 @@ class MainActivity : ComponentActivity() {
                                 SessionsListScreen(
                                     tokenStorage = tokenStorage,
                                     onOpenDetails = { sessionId, hallId -> navController.navigate("details/$sessionId/$hallId") },
-                                    onOpenFilm = { filmId -> navController.navigate("film/$filmId") }
+                                    onOpenFilm = { filmId, title, imageUrl ->
+                                        val encodedTitle = java.net.URLEncoder.encode(title, Charsets.UTF_8.name())
+                                        val encodedImage = java.net.URLEncoder.encode(imageUrl, Charsets.UTF_8.name())
+                                        navController.navigate("film/$filmId?title=$encodedTitle&image=$encodedImage")
+                                    }
                                 )
-                            }
-                            composable("film/{filmId}") { backStack ->
-                                val filmId = backStack.arguments?.getString("filmId") ?: return@composable
-                                FilmDetailsScreen(filmId = filmId)
                             }
                             composable("details/{sessionId}/{hallId}") { backStack ->
                                 val sessionId = backStack.arguments?.getString("sessionId") ?: return@composable
@@ -74,6 +74,12 @@ class MainActivity : ComponentActivity() {
                                     hallId = hallId,
                                     onBack = { navController.popBackStack() }
                                 )
+                            }
+                            composable("film/{filmId}?title={title}&image={image}") { backStack ->
+                                val filmId = backStack.arguments?.getString("filmId") ?: return@composable
+                                val title = backStack.arguments?.getString("title") ?: filmId
+                                val image = backStack.arguments?.getString("image") ?: ""
+                                FilmDetailsScreen(filmId = filmId, title = title, imageUrl = image)
                             }
                         }
                     }

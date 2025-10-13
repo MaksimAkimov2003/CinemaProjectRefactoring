@@ -73,7 +73,7 @@ fun generateDates(): List<DayItem> {
 fun SessionsListScreen(
     tokenStorage: TokenStorage,
     onOpenDetails: (sessionId: String, hallId: String) -> Unit = { _, _ -> },
-    onOpenFilm: (filmId: String) -> Unit = {},
+    onOpenFilm: (filmId: String, title: String, imageUrl: String) -> Unit = { _, _, _ -> },
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val isLoading = remember { mutableStateOf(true) }
@@ -124,30 +124,32 @@ fun SessionsListScreen(
 
         LazyColumn(contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(sessions.value) { s ->
+                val film = FilmCatalog.getInfo(s.filmId)
+                val title = film?.titleRu ?: s.filmId
+                val imageUrl = film?.imageUrl ?: ""
                 Card(
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp)
-                        .clickable { onOpenFilm(s.filmId) }
+                        .clickable { onOpenFilm(s.filmId, title, imageUrl) }
                 ) {
                     Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        val film = FilmCatalog.getInfo(s.filmId)
                         val request = ImageRequest.Builder(context)
-                            .data(film?.imageUrl)
+                            .data(imageUrl)
                             .diskCachePolicy(CachePolicy.ENABLED)
                             .memoryCachePolicy(CachePolicy.ENABLED)
                             .crossfade(true)
                             .build()
                         AsyncImage(
                             model = request,
-                            contentDescription = film?.titleRu ?: s.filmId,
+                            contentDescription = title,
                             modifier = Modifier.size(64.dp),
                             contentScale = ContentScale.Crop,
                             placeholder = ColorPainter(Color(0xFFDDDDDD)),
                             error = ColorPainter(Color(0xFFDDDDDD)),
                             onError = {
-                                Log.e("SessionsList", "Image load failed for ${film?.imageUrl}: ${it.result.throwable.message}")
+                                Log.e("SessionsList", "Image load failed for $imageUrl: ${it.result.throwable.message}")
                             }
                         )
                         Spacer(modifier = Modifier.padding(8.dp))
@@ -155,7 +157,7 @@ fun SessionsListScreen(
                             DateTimeFormatter.ofPattern("HH:mm").format(OffsetDateTime.parse(s.startAt))
                         } catch (e: Exception) { s.startAt }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(text = film?.titleRu ?: s.filmId)
+                            Text(text = title)
                             Text(text = "Зал: ${s.hallId}  •  ${time}")
                         }
                         androidx.compose.material3.TextButton(onClick = { onOpenDetails(s.id, s.hallId) }) {
