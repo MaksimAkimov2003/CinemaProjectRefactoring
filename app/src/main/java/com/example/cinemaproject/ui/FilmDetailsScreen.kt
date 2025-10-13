@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +30,12 @@ import com.google.gson.Gson
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun FilmDetailsScreen(filmId: String, title: String, imageUrl: String) {
+fun FilmDetailsScreen(
+    filmId: String,
+    title: String,
+    imageUrl: String,
+    onAddReview: (filmId: String, title: String) -> Unit = { _, _ -> },
+) {
     val isLoading = remember(filmId, imageUrl) { mutableStateOf(true) }
     val reviews = remember(filmId) { mutableStateOf(listOf<Review>()) }
     val context = LocalContext.current
@@ -79,6 +85,10 @@ fun FilmDetailsScreen(filmId: String, title: String, imageUrl: String) {
         Spacer(modifier = Modifier.height(8.dp))
         // Fixed rating = 4
         Text(text = "Рейтинг: 4/5", style = MaterialTheme.typography.bodyLarge, color = Color.Black, modifier = Modifier.padding(horizontal = 16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(onClick = { onAddReview(filmId, title) }, modifier = Modifier.padding(horizontal = 16.dp)) {
+            Text(text = "Добавить отзыв")
+        }
         Spacer(modifier = Modifier.height(12.dp))
         LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
             items(reviews.value) { r ->

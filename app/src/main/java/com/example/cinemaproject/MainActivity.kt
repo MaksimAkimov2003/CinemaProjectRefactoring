@@ -20,6 +20,7 @@ import com.example.cinemaproject.ui.LoginScreen
 import com.example.cinemaproject.ui.SessionsListScreen
 import com.example.cinemaproject.ui.SessionDetailsScreen
 import com.example.cinemaproject.ui.FilmDetailsScreen
+import com.example.cinemaproject.ui.AddReviewScreen
 import com.example.cinemaproject.data.TokenStorage
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
@@ -79,7 +80,24 @@ class MainActivity : ComponentActivity() {
                                 val filmId = backStack.arguments?.getString("filmId") ?: return@composable
                                 val title = backStack.arguments?.getString("title") ?: filmId
                                 val image = backStack.arguments?.getString("image") ?: ""
-                                FilmDetailsScreen(filmId = filmId, title = title, imageUrl = image)
+                                FilmDetailsScreen(
+                                    filmId = filmId,
+                                    title = title,
+                                    imageUrl = image,
+                                    onAddReview = { fId, fTitle ->
+                                        val encTitle = java.net.URLEncoder.encode(fTitle, Charsets.UTF_8.name())
+                                        navController.navigate("addReview/$fId?title=$encTitle")
+                                    }
+                                )
+                            }
+                            composable("addReview/{filmId}?title={title}") { backStack ->
+                                val filmId = backStack.arguments?.getString("filmId") ?: return@composable
+                                val title = backStack.arguments?.getString("title") ?: filmId
+                                AddReviewScreen(
+                                    filmId = filmId,
+                                    title = title,
+                                    onBack = { navController.popBackStack() }
+                                )
                             }
                         }
                     }
