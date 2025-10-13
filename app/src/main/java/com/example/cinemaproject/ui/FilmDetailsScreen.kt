@@ -29,6 +29,8 @@ import androidx.compose.foundation.lazy.items
 import com.google.gson.Gson
 import androidx.compose.ui.platform.LocalContext
 
+var rating = 4.0
+
 @Composable
 fun FilmDetailsScreen(
     filmId: String,
@@ -84,7 +86,7 @@ fun FilmDetailsScreen(
         Text(text = title, style = MaterialTheme.typography.titleLarge, color = Color.Black, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.height(8.dp))
         // Fixed rating = 4
-        Text(text = "Рейтинг: 4/5", style = MaterialTheme.typography.bodyLarge, color = Color.Black, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(text = "Рейтинг: $rating/5", style = MaterialTheme.typography.bodyLarge, color = Color.Black, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.height(12.dp))
         Button(onClick = { onAddReview(filmId, title) }, modifier = Modifier.padding(horizontal = 16.dp)) {
             Text(text = "Добавить отзыв")

@@ -39,7 +39,10 @@ fun AddReviewScreen(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Ваши впечатления (опционально)") }
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             (1..5).forEach { i ->
                 IconButton(onClick = { rating.value = i }) {
                     if (rating.value >= i) {
@@ -53,7 +56,10 @@ fun AddReviewScreen(
         }
         Spacer(modifier = Modifier.size(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(onClick = onBack) { Text("Сохранить") }
+            Button(onClick = {
+                com.example.cinemaproject.ui.rating = 3.7
+                onBack()
+            }) { Text("Сохранить") }
             Button(onClick = onBack) { Text("Отмена") }
         }
     }
