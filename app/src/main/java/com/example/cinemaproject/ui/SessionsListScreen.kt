@@ -44,6 +44,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.foundation.clickable
+
 
 data class DayItem(val isoDate: String, val display: String)
 
@@ -71,6 +73,7 @@ fun generateDates(): List<DayItem> {
 fun SessionsListScreen(
     tokenStorage: TokenStorage,
     onOpenDetails: (sessionId: String, hallId: String) -> Unit = { _, _ -> },
+    onOpenFilm: (filmId: String) -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val isLoading = remember { mutableStateOf(true) }
@@ -121,11 +124,13 @@ fun SessionsListScreen(
 
         LazyColumn(contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(sessions.value) { s ->
-                Card(elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                Card(
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.dp)
-                        .let { it }) {
+                        .clickable { onOpenFilm(s.filmId) }
+                ) {
                     Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                         val film = FilmCatalog.getInfo(s.filmId)
                         val request = ImageRequest.Builder(context)

@@ -19,6 +19,7 @@ import com.example.cinemaproject.ui.RegisterScreen
 import com.example.cinemaproject.ui.LoginScreen
 import com.example.cinemaproject.ui.SessionsListScreen
 import com.example.cinemaproject.ui.SessionDetailsScreen
+import com.example.cinemaproject.ui.FilmDetailsScreen
 import com.example.cinemaproject.data.TokenStorage
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
@@ -56,8 +57,13 @@ class MainActivity : ComponentActivity() {
                             composable("sessions") {
                                 SessionsListScreen(
                                     tokenStorage = tokenStorage,
-                                    onOpenDetails = { sessionId, hallId -> navController.navigate("details/$sessionId/$hallId") }
+                                    onOpenDetails = { sessionId, hallId -> navController.navigate("details/$sessionId/$hallId") },
+                                    onOpenFilm = { filmId -> navController.navigate("film/$filmId") }
                                 )
+                            }
+                            composable("film/{filmId}") { backStack ->
+                                val filmId = backStack.arguments?.getString("filmId") ?: return@composable
+                                FilmDetailsScreen(filmId = filmId)
                             }
                             composable("details/{sessionId}/{hallId}") { backStack ->
                                 val sessionId = backStack.arguments?.getString("sessionId") ?: return@composable
