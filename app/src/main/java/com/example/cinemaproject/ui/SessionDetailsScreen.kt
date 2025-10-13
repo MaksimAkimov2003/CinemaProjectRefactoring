@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -53,6 +54,8 @@ fun SessionDetailsScreen(
     val isLoading = remember(sessionId, hallId) { mutableStateOf(true) }
     val hallPlan = remember(sessionId, hallId) { mutableStateOf<HallPlan?>(null) }
     val tickets = remember(sessionId, hallId) { mutableStateOf<List<Ticket>>(emptyList()) }
+    val isOrdering = remember(sessionId, hallId) { mutableStateOf(false) }
+    val isSuccess = remember(sessionId, hallId) { mutableStateOf(false) }
 
     LaunchedEffect(sessionId, hallId) {
         scope.launch {
@@ -77,6 +80,24 @@ fun SessionDetailsScreen(
 
     val plan = hallPlan.value ?: run {
         Column(modifier = Modifier.padding(12.dp)) { Text(text = "Нет данных по залу") }
+        return
+    }
+
+    if (isSuccess.value) {
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Заказ успешно оплачен - билеты будут отправлены вам на почту",
+                color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center
+            )
+        }
         return
     }
     val seatIdToStatus = tickets.value.associateBy { it.seatId }.mapValues { it.value.status }
@@ -179,6 +200,30 @@ fun SessionDetailsScreen(
                         }
                     }
                 }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        if (isOrdering.value) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(text = "Обработка заказа...", color = Color(0xFFBCA7FF))
+            }
+        } else {
+            Button(
+                enabled = selectedSeatIds.value.isNotEmpty(),
+                onClick = {
+                    scope.launch {
+                        isOrdering.value = true
+                        kotlinx.coroutines.delay(3000)
+                        isOrdering.value = false
+                        isSuccess.value = true
+                    }
+                }
+            ) {
+                Text(text = "Оформить заказ")
             }
         }
     }
