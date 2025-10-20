@@ -3,6 +3,7 @@ package com.example.cinemaproject.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -62,8 +64,12 @@ fun SessionDetailsScreen(
             try {
                 val token = tokenStorage.getAccessToken()
                 val api = ApiProvider.getApi(context)
-                val plan = api.getHallPlan(authorization = token?.let { "Bearer $it" } ?: "", hallId = hallId)
-                val ticketList = api.getSessionTickets(authorization = token?.let { "Bearer $it" } ?: "", sessionId = sessionId, status = null)
+                val plan = api.getHallPlan(authorization = token?.let { "Bearer $it" } ?: "",
+                    hallId = hallId)
+                val ticketList =
+                    api.getSessionTickets(authorization = token?.let { "Bearer $it" } ?: "",
+                        sessionId = sessionId,
+                        status = null)
                 hallPlan.value = plan
                 tickets.value = ticketList
             } catch (_: Exception) {
@@ -106,24 +112,45 @@ fun SessionDetailsScreen(
     val selectedSeatIds = remember(sessionId, hallId) { mutableStateOf<Set<String>>(emptySet()) }
 
     // Group by row for variable seat counts per row
-    val seatsByRow = plan.seats.groupBy { it.row }.mapValues { it.value.sortedBy { s -> s.number } }.toSortedMap()
+    val seatsByRow = plan.seats.groupBy { it.row }.mapValues { it.value.sortedBy { s -> s.number } }
+        .toSortedMap()
 
     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Box(
-            modifier = Modifier.fillMaxWidth().height(24.dp).background(Color(0xFF3A2C5C)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp)
+                .background(Color(0xFF3A2C5C)),
             contentAlignment = Alignment.Center
-        ) { Text(text = "ЭКРАН", color = Color(0xFFBCA7FF), style = MaterialTheme.typography.labelLarge) }
+        ) {
+            Text(
+                text = "ЭКРАН",
+                color = Color(0xFFBCA7FF),
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        LazyColumn(
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             items(seatsByRow.entries.toList()) { (rowNum, rowSeats) ->
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = rowNum.toString(),
-                        modifier = Modifier.padding(end = 8.dp).size(width = 24.dp, height = 24.dp),
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(width = 24.dp, height = 24.dp),
                         color = Color(0xFFBCA7FF), textAlign = TextAlign.Center
                     )
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.weight(1f)) {
-                        items(rowSeats) { seat ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        rowSeats.forEach { seat ->
                             val status = seatIdToStatus[seat.id] ?: "AVAILABLE"
                             val isAvailable = status !in listOf("SOLD", "RESERVED", "CANCELLED")
                             val isSelected = selectedSeatIds.value.contains(seat.id)
@@ -134,35 +161,67 @@ fun SessionDetailsScreen(
                             }
                             val idx = rowSeats.indexOf(seat)
                             val mid = rowSeats.size / 2
-                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 if (idx == mid) Spacer(modifier = Modifier.size(20.dp))
                                 Box(
                                     modifier = Modifier
                                         .size(32.dp)
-                                        .background(color, shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
-                                        .border(1.dp, Color(0xFF2C2344), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
-                                        .let { m -> if (isAvailable) m.clickable {
-                                            selectedSeatIds.value = if (isSelected) selectedSeatIds.value - seat.id else selectedSeatIds.value + seat.id
-                                        } else m },
+                                        .background(
+                                            color,
+                                            shape = androidx.compose.foundation.shape.RoundedCornerShape(
+                                                6.dp
+                                            )
+                                        )
+                                        .border(
+                                            1.dp,
+                                            Color(0xFF2C2344),
+                                            shape = androidx.compose.foundation.shape.RoundedCornerShape(
+                                                6.dp
+                                            )
+                                        )
+                                        .let { m ->
+                                            if (isAvailable) m.clickable {
+                                                selectedSeatIds.value =
+                                                    if (isSelected) selectedSeatIds.value - seat.id else selectedSeatIds.value + seat.id
+                                            } else m
+                                        },
                                     contentAlignment = Alignment.Center
-                                ) { Text(text = seat.number.toString(), color = Color.White, style = MaterialTheme.typography.labelMedium) }
+                                ) {
+                                    Text(
+                                        text = seat.number.toString(),
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
                             }
                         }
                     }
                     Text(
                         text = rowNum.toString(),
-                        modifier = Modifier.padding(start = 8.dp).size(width = 24.dp, height = 24.dp),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(width = 24.dp, height = 24.dp),
                         color = Color(0xFFBCA7FF), textAlign = TextAlign.Center
                     )
                 }
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.size(16.dp).background(Color(0xFF8B6BE8)))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier
+                .size(16.dp)
+                .background(Color(0xFF8B6BE8)))
             Text(text = "Свободно", color = Color(0xFFBCA7FF))
             Spacer(modifier = Modifier.size(8.dp))
-            Box(modifier = Modifier.size(16.dp).background(Color(0xFF6B5C8E)))
+            Box(modifier = Modifier
+                .size(16.dp)
+                .background(Color(0xFF6B5C8E)))
             Text(text = "Занято", color = Color(0xFFBCA7FF))
         }
 
@@ -185,17 +244,39 @@ fun SessionDetailsScreen(
                             Box(
                                 modifier = Modifier
                                     .size(24.dp)
-                                    .background(Color(0xFF2ECC71), shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp))
+                                    .background(
+                                        Color(0xFF2ECC71),
+                                        shape = androidx.compose.foundation.shape.RoundedCornerShape(
+                                            6.dp
+                                        )
+                                    )
                             ) {}
-                            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                Text(text = "Ряд ${seat.row}", color = Color.White, style = MaterialTheme.typography.bodyMedium)
-                                Text(text = "Место ${seat.number}", color = Color.White, style = MaterialTheme.typography.bodyMedium)
-                                Text(text = "$priceRub ₽", color = Color(0xFFBCA7FF), style = MaterialTheme.typography.labelMedium)
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "Ряд ${seat.row}",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "Место ${seat.number}",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "$priceRub ₽",
+                                    color = Color(0xFFBCA7FF),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             }
                             Text(
                                 text = "✕",
                                 color = Color(0xFFBCA7FF),
-                                modifier = Modifier.clickable { selectedSeatIds.value = selectedSeatIds.value - seatId }
+                                modifier = Modifier.clickable {
+                                    selectedSeatIds.value = selectedSeatIds.value - seatId
+                                }
                             )
                         }
                     }
@@ -206,7 +287,11 @@ fun SessionDetailsScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         if (isOrdering.value) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 CircularProgressIndicator()
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(text = "Обработка заказа...", color = Color(0xFFBCA7FF))
