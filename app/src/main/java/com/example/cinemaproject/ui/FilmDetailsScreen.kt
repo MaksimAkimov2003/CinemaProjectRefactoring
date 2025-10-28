@@ -37,6 +37,16 @@ fun FilmDetailsScreen(
     title: String,
     imageUrl: String,
     onAddReview: (filmId: String, title: String) -> Unit = { _, _ -> },
+    count: Int = 0,
+    index: Int = 1,
+    tag: String = "",
+    note: String = "note",
+    enabled: Boolean = false,
+    visible: Boolean = true,
+    factor: Double = 0.0,
+    items: List<String> = emptyList(),
+    callback: (Int, String, Boolean) -> Unit = { _, _, _ -> },
+    payload: Any? = null,
 ) {
     val isLoading = remember(filmId, imageUrl) { mutableStateOf(true) }
     val reviews = remember(filmId) { mutableStateOf(listOf<Review>()) }
